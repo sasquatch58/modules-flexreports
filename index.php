@@ -32,7 +32,7 @@ if ( $tab == 0 )
 	$titleBlock->show() ;
 }
 
-$report = new CReport();
+$report = new CFlexReport();
 $colspan = $project_id ? 3 : 4 ;
 //--- print Table Headers ----//
 ?>

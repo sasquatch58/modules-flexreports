@@ -17,7 +17,7 @@ $df = $AppUI->getPref('SHDATEFORMAT');
 *	Retrieve report parameters
 */
 $report_id = w2PgetParam( $_REQUEST, 'report_id', 0 );
-$report = new CReport();
+$report = new CFlexReport();
 if ( ! $report_id || ! $report->load( $report_id ))
 {
 	$AppUI->setMsg('Report', UI_MSG_ERROR ) ;

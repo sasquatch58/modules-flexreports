@@ -31,7 +31,7 @@ if ( !$canEdit) {
 /*
 *  Check if report model to be updated exists
 */
-$report = new CReport();
+$report = new CFlexReport();
 if ( $report_id && !$report->load( $report_id )) {
 	$AppUI->setMsg( 'Report' );
 	$AppUI->setMsg( 'invalidID', UI_MSG_ERROR, true );

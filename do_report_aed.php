@@ -6,7 +6,7 @@ if (!defined('W2P_BASE_DIR')){
 global $AppUI, $baseDir;
 
 
-$report = new CReport();
+$report = new CFlexReport();
 $del = w2PgetParam( $_POST, 'del', 0 );
 /*
 *	Delete report

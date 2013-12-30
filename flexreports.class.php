@@ -9,10 +9,10 @@ define('PROJECT_RESTRICTED','1');
 define('USER_RESTRICTED',    '2');
 
 ##
-## CReport Class
+## CFlexReport Class
 ##
 
-class CReport extends CW2pObject {
+class CFlexReport extends w2p_Core_BaseObject {
     public $report_id = NULL;                    // Unique Id
     public $report_name = NULL;                    // Report name (used in report list)
     public $report_creator = NULL;                // User Id of report creator
