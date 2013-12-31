@@ -31,7 +31,6 @@ class CFlexReport_Query extends w2p_Database_Query {
         $this->join_list[$table]=$table;
         switch ( $table ) {
             case 'companies' :
-                require_once( $AppUI->getModuleClass( 'companies') );
                 $object = new CCompany();
                 $allowed_objects = $object->getAllowedRecords( $AppUI->user_id, 'company_id, company_name' );
                 if ( count( $allowed_objects )) {
@@ -46,7 +45,6 @@ class CFlexReport_Query extends w2p_Database_Query {
                 if ( $this->project_id ) {
                     $this->addWhere( "$join_key.$field = " . $this->project_id );
                 } else {
-                    require_once( $AppUI->getModuleClass( 'projects') );
                     $object = new CProject();
                     $allowed_objects = $object->getAllowedRecords( $AppUI->user_id, 'project_id, project_name' );
                     if ( count( $allowed_objects ) ) {
@@ -191,7 +189,6 @@ class CFlexReport_Query extends w2p_Database_Query {
             // Include WHERE clause for allowed records
             switch ( $join_table ) {
                 case 'companies' :
-                    require_once( $AppUI->getModuleClass( 'companies') );
                     $object = new CCompany();
                     $allowed_objects = $object->getAllowedRecords( $AppUI->user_id, 'company_id, company_name' );
                     if ( count( $allowed_objects )) {
@@ -204,7 +201,6 @@ class CFlexReport_Query extends w2p_Database_Query {
                     if ( $this->project_id ) {
                         $this->addWhere( "$join_key.project_id = " . $this->project_id );
                     } else {
-                        require_once( $AppUI->getModuleClass( 'projects') );
                         $object = new CProject();
                         $allowed_objects = $object->getAllowedRecords( $AppUI->user_id, 'projects.project_id, project_name' );
                         if ( count( $allowed_objects )) {
@@ -215,7 +211,6 @@ class CFlexReport_Query extends w2p_Database_Query {
                     }
                     break;
                 case 'tasks' :
-                    require_once( $AppUI->getModuleClass( 'tasks') );
                     $object = new CTask();
                     $denied_tasks = $object->getDeniedRecords( $AppUI->user_id, 'task_id, task_name' );
                     if ( count($denied_tasks) ) {
