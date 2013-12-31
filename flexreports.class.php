@@ -12,7 +12,8 @@ define('USER_RESTRICTED',    '2');
 ## CFlexReport Class
 ##
 
-class CFlexReport extends w2p_Core_BaseObject {
+class CFlexReport extends w2p_Core_BaseObject
+{
     public $report_id = NULL;                    // Unique Id
     public $report_name = NULL;                    // Report name (used in report list)
     public $report_creator = NULL;                // User Id of report creator
@@ -32,10 +33,6 @@ class CFlexReport extends w2p_Core_BaseObject {
 
     public function __construct() {
         parent::__construct('flexreports', 'report_id');
-    }
-
-    public function check() {
-        return true;
     }
 
     public function hook_postDelete()
@@ -113,53 +110,40 @@ class CFlexReport extends w2p_Core_BaseObject {
         $q->addQuery('DISTINCT report_id');
 //    Build where clause
         $where = "";
-        if ( $search == 'all' || $search == 'public' || $search == 'user' )
-        // Public reports
-        {
+        if ( $search == 'all' || $search == 'public' || $search == 'user' ) {
             $where .= "( report_type = ". PUBLIC_REPORT . " )";
         }
         // Company specific reports
-        if ( $search == 'all' || $search == 'company' || $search == 'project' || $search == 'user' )
-        {
-            if ( $search == 'all' )
-            {
+        if ( $search == 'all' || $search == 'company' || $search == 'project' || $search == 'user' ) {
+            if ( $search == 'all' ) {
                 $company = new CCompany ();
                 $company_list = $company->getAllowedRecords($uid, "company_id");
-                if (count($company_list))
-                {
+                if (count($company_list)) {
                     $where .= $where ? " OR " : "" ;
                     $where .= "( ra.report_access_type = " . COMPANY_RESTRICTED . " AND ra.report_access_id IN (" . implode(', ', array_keys($company_list)) ."))";
                 }
-            }
-            else
-            {
+            } else {
                 $where .= $where ? " OR " : "" ;
                 $where .= "( ra.report_access_type = " . COMPANY_RESTRICTED . " AND ra.report_access_id IN ( " . $cid . ") )";
             }
         }
         // Project specific reports
-        if ( $search == 'all' || $search == 'project' )
-        {
-            if ( $search == 'all' )
-            {
+        if ( $search == 'all' || $search == 'project' ) {
+            if ( $search == 'all' ) {
                 $project= new CProject();
                 $project_list = $project->getAllowedRecords($uid, 'projects.project_id');
-                if ( count( $project_list ) )
-                {
+                if ( count( $project_list ) ) {
                     $where .= $where ? " OR " : "" ;
                     $where .= "( ra.report_access_type = " . PROJECT_RESTRICTED . " AND ra.report_access_id IN (" . implode( ', ', $project_list ) . "))" ;
                 }
-            }
-            else
-            {
+            } else {
                 $where .= $where ? " OR " : "" ;
                 $where .= "( ra.report_access_type = " . PROJECT_RESTRICTED . " AND ra.report_access_id IN ( " .$pid . " ) )";
 
             }
         }
 // User specific reports
-        if ( $search == 'all' || $search == 'user')
-        {
+        if ( $search == 'all' || $search == 'user') {
             // User restricted report
             $where .= $where ? " OR " : "" ;
             $where .= " ( ra.report_access_type = ". USER_RESTRICTED . " AND ra.report_access_id = " . $uid . ")" ;
@@ -168,8 +152,7 @@ class CFlexReport extends w2p_Core_BaseObject {
         }
 // Admin report
         $perms =& $AppUI->acl();
-        if ( ( $search == 'admin' || $search == 'user' ) && $perms->checkModule( 'admin', 'view' ) )
-        {
+        if ( ( $search == 'admin' || $search == 'user' ) && $perms->checkModule( 'admin', 'view' ) ) {
             $where .= $where ? " OR " : "" ;
             $where .= " ( report_type = " . ADMIN_REPORT . ")" ;
         }
@@ -197,8 +180,7 @@ class CFlexReport extends w2p_Core_BaseObject {
 
         $proj = new CProject();
 
-        if ( $this->report_type == RESTRICTED_REPORT )
-        {
+        if ( $this->report_type == RESTRICTED_REPORT ) {
             $q = new w2p_Database_Query();
             $q->addTable('flexreport_access');
             $q->addQuery('*');
@@ -207,25 +189,22 @@ class CFlexReport extends w2p_Core_BaseObject {
             $all_project = false ;
             $company_list = '';
             foreach ( $access_rights as $ra ) {
-                switch ( $ra['report_access_type'] )
-                {
+                switch ( $ra['report_access_type'] ) {
                     case COMPANY_RESTRICTED :
-                            $company_list .= ($company_list ? ',' : '').$ra['report_access_id'];
-                            break;
+                        $company_list .= ($company_list ? ',' : '').$ra['report_access_id'];
+                        break;
                     case PROJECT_RESTRICTED :
-                            $projects[] = $ra['report_access_id'];
-                            break;
+                        $projects[] = $ra['report_access_id'];
+                        break;
                     case USER_RESTRICTED :
-                            $all_project = true ;
-                            break;
+                        $all_project = true ;
+                        break;
                 }
             }
-            if ( ! $all_project )
-            {
+            if ( ! $all_project ) {
                 // Retrieve company list
                 $company_projects = array();
-                if ( $company_list )
-                {
+                if ( $company_list ) {
                     $q = new w2p_Database_Query();
                     $q->addTable('projects');
                     $q->addQuery('project_id');
@@ -251,7 +230,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param null $extra
      * @return array|Associative
      */
-    public function getTargetCompanies( $uid, $fields='*', $orderby='', $index=NULL, $extra=NULL ) {
+    public function getTargetCompanies( $uid, $fields='*', $orderby='', $index=NULL, $extra=NULL )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('report_access_id');
@@ -279,7 +259,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param null $extra
      * @return array|Associative
      */
-    public function getTargetUsername( $uid, $fields='', $orderby='', $index=NULL, $extra=NULL ) {
+    public function getTargetUsername( $uid, $fields='', $orderby='', $index=NULL, $extra=NULL )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('report_access_id');
@@ -309,7 +290,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param $canEdit
      * @param string $target
      */
-    public function show_report( $project_id, $canEdit, $target='all' ) {
+    public function show_report( $project_id, $canEdit, $target='all' )
+    {
         global $AppUI ;
         $id_list = array();
         if ( ! $project_id && $target == 'project' ) {
@@ -317,8 +299,7 @@ class CFlexReport extends w2p_Core_BaseObject {
         }
         $rowspan = count( $id_list ) ? "rowspan=\"" . count( $id_list ) . "\" " : "";
         echo "<tr>\n<td valign=\"top\" ". $rowspan . ">";
-        if ( $canEdit )
-        {
+        if ( $canEdit ) {
             echo "<a href=\"?m=flexreports&a=addedit&report_id=" . $this->report_id . "\">";
             echo "<img src=\"./modules/flexreports/images/pencil.gif\" width=\"12\" heigth=\"12\" border=\"0\" alt=\"". $AppUI->_('Edit report') . "\" >\n" ;
             echo "</a>";
@@ -333,17 +314,12 @@ class CFlexReport extends w2p_Core_BaseObject {
         echo $s ;
         $description = $this->report_description ? $this->report_description : "&nbsp;" ;
         echo "<td valign=\"top\" ". $rowspan . ">" . $description . "</td>" ;
-        if ( ! $project_id && $target == 'all' )
-        {
+        if ( ! $project_id && $target == 'all' ) {
             echo "<td valign=\"top\">" . $AppUI->_("All projects") ."</td>" ;
-        }
-        else
-        {
-            if ( ! $project_id )
-            {
+        } else {
+            if ( ! $project_id ) {
                 $s = '';
-                foreach ( $id_list as $pid => $pname )
-                {
+                foreach ( $id_list as $pid => $pname ) {
                     $s .=  $s ? "</tr>\n<tr><td>" : "<td>" ;
                     $s .= "<a href=\"?m=flexreports&a=view&report_id=" . $this->report_id ."&project_id=" . $pid . "\" >" . $pname . "</a></td>\n" ;
                 }
@@ -358,7 +334,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param $rank
      * @return null
      */
-    public function addField( $field_ref, $rank ) {
+    public function addField( $field_ref, $rank )
+    {
         global $field_desc;
 
         $nc = strpos($field_ref, ':');
@@ -383,7 +360,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param string $fields
      * @return Array
      */
-    public function getReportField( $fields = "*" ) {
+    public function getReportField( $fields = "*" )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_fields');
         $q->addQuery( $fields );
@@ -396,7 +374,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param $filter
      * @return null
      */
-    public function addReportFilter( $filter ) {
+    public function addReportFilter( $filter )
+    {
         global $field_desc;
         $field_ref = $filter[1];
         $nc = strpos($field_ref, ':');
@@ -424,7 +403,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param string $fields
      * @return Array
      */
-    public function getReportFilter( $fields = '*') {
+    public function getReportFilter( $fields = '*')
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_filters');
         $q->addQuery( $fields );
@@ -437,7 +417,8 @@ class CFlexReport extends w2p_Core_BaseObject {
      * @param $id
      * @return null
      */
-    public function addReportAccess( $type, $id ) {
+    public function addReportAccess( $type, $id )
+    {
         global $AppUI;
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
@@ -453,7 +434,8 @@ class CFlexReport extends w2p_Core_BaseObject {
     /**
      * @return Array
      */
-    public function getReportAccess() {
+    public function getReportAccess()
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('*');

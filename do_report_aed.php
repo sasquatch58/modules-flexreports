@@ -13,13 +13,13 @@ $del = w2PgetParam( $_POST, 'del', 0 );
 */
 if ( $del ) {
 	$report_id = w2PgetParam( $_POST, 'report_id', 0 );
-	if ( !$report_id || !$report->load( $report_id ) )	{
+	if ( !$report_id || !$report->load( $report_id ) ) {
 		$AppUI->setMsg( 'Report' );
 		$AppUI->setMsg( 'invalidID', UI_MSG_ERROR, true );
 		$AppUI->redirect();
 	}
 	$msg = $report->delete();
-	if ( $msg )		{
+	if ( $msg ) {
 		$AppUI->setMsg('Delete failed', UI_MSG_ERROR, true );
 		$AppUI->setMsg( $msg, UI_MSG_ERROR, true );
 		$AppUI->redirect();
