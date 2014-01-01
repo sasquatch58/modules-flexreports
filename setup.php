@@ -25,10 +25,8 @@ if (@$a == 'setup') {
     echo w2PshowModuleConfig( $config );
 }
 
-class CSetupFlexReports extends w2p_Core_Setup
+class CSetupFlexReports extends w2p_System_Setup
 {
-    global $AppUI;
-
     public function install() {
 
         $q = $this->_getQuery();
@@ -120,10 +118,7 @@ class CSetupFlexReports extends w2p_Core_Setup
         $q->createDefinition($sql);
         $q->exec();
 
-        $perms = $AppUI->acl();
-        return $perms->registerModule('Holiday', 'holiday');
-
- //       return null;
+        return parent::install();
     }
 
     public function remove() {
@@ -140,13 +135,6 @@ class CSetupFlexReports extends w2p_Core_Setup
         $q->dropTable('flexreports');
         $q->exec();
 
-        $perms = $AppUI->acl();
-        return $perms->unregisterModule('holiday');
-
-//        return null;
-    }
-
-    public function upgrade() {
-        return null;
+        return parent::remove();
     }
 }

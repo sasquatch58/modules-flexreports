@@ -9,10 +9,11 @@ define('PROJECT_RESTRICTED','1');
 define('USER_RESTRICTED',    '2');
 
 ##
-## CReport Class
+## CFlexReport Class
 ##
 
-class CReport extends CW2pObject {
+class CFlexReport extends w2p_Core_BaseObject
+{
     public $report_id = NULL;                    // Unique Id
     public $report_name = NULL;                    // Report name (used in report list)
     public $report_creator = NULL;                // User Id of report creator
@@ -31,96 +32,37 @@ class CReport extends CW2pObject {
     public $report_user_time;                    // user time field (allocated/assigned time) and predefined period code
 
     public function __construct() {
-        // empty constructor
         parent::__construct('flexreports', 'report_id');
     }
 
-    public function bind( $hash )     {
-        if (!is_array( $hash )) {
-            return get_class( $this )."::bind failed";
-        } else {
-            $this->_query->bindHashToObject($hash, $this);
-            $this->_query->clear();
-            return NULL;
-        }
-    }
-
-    public function check() {
-        return NULL;
-    }
-       
-    public function store() {
-        $msg = $this->check();
-        if( $msg ) {
-            return get_class( $this )."::store-check failed";
-        }
-        if( $this->report_id ) {
-            $q = new w2p_Database_Query;
-            $ret = $q->updateObject( 'flexreports', $this, 'report_id' );
-            $q->clear();
-        } else {
-            $q = new w2p_Database_Query;
-            $ret = $q->insertObject( 'flexreports', $this, 'report_id' );
-            $q->clear();
-        }
-        if( !$ret ) {
-            return get_class( $this )."::store failed <br />" . db_error();
-        } else {
-            return NULL;
-        }
-    }
-
-    public function delete() {
-        global $AppUI;
-        $q = new w2p_Database_Query();
+    public function hook_postDelete()
+    {
+        $q = $this->_getQuery();
         // Delete report field records
         $q->setDelete('flexreport_fields');
         $q->addWhere('report_field_report = ' . $this->report_id);
-        if (!$q->exec()) {
-            return db_error();
-        }
+        $q->exec();
         // Delete report filter records
         $q->clear();
         $q->setDelete('flexreport_filters');
         $q->addWhere('report_filter_report = ' . $this->report_id);
-        if (!$q->exec()) {
-            return db_error();
-        }
+        $q->exec();
         // Delete report access records
         $q->clear();
         $q->setDelete('flexreport_access');
         $q->addWhere('report_access_report = ' . $this->report_id);
-        if (!$q->exec()) {
-            return db_error();
-        }
-        // Delete report record
-        $q->clear();
-        $q->setDelete('flexreports');
-        $q->addWhere('report_id = ' . $this->report_id);
-        if (!$q->exec()) {
-            return db_error();
-        } else {
-            return null;
-        }
+        $q->exec();
+
+        parent::hook_postDelete();
     }
 
-    /*
-    *    Retrieve available report IDs
-    *         @param        user ID
-    *         @param        Type of search :
-    *                         all            Available to all projects
-    *                         public        Public project only
-    *                         company        Available for $cid company
-    *                         project        Available for $pid project
-    *                         user        Available for $uid user
-    *                         private        $uid private only
-    *                         admin        admin only
-    *        @param        project ID
-    *         @param        company ID
-    */
-    /*
-    *        Check @param
-    */
+    /**
+     * @param $uid
+     * @param string $search
+     * @param int $pid
+     * @param int $cid
+     * @return array|Indexed
+     */
     public function getAllowedReportId( $uid, $search='all', $pid=0, $cid=0 ) {
         global $AppUI;
 
@@ -166,55 +108,42 @@ class CReport extends CW2pObject {
         $q = new w2p_Database_Query();
         $q->addTable('flexreports');
         $q->addQuery('DISTINCT report_id');
-//    Buil where clause
+//    Build where clause
         $where = "";
-        if ( $search == 'all' || $search == 'public' || $search == 'user' )
-        // Public reports
-        {
+        if ( $search == 'all' || $search == 'public' || $search == 'user' ) {
             $where .= "( report_type = ". PUBLIC_REPORT . " )";
         }
         // Company specific reports
-        if ( $search == 'all' || $search == 'company' || $search == 'project' || $search == 'user' )
-        {
-            if ( $search == 'all' )
-            {
+        if ( $search == 'all' || $search == 'company' || $search == 'project' || $search == 'user' ) {
+            if ( $search == 'all' ) {
                 $company = new CCompany ();
                 $company_list = $company->getAllowedRecords($uid, "company_id");
-                if (count($company_list))
-                {
+                if (count($company_list)) {
                     $where .= $where ? " OR " : "" ;
                     $where .= "( ra.report_access_type = " . COMPANY_RESTRICTED . " AND ra.report_access_id IN (" . implode(', ', array_keys($company_list)) ."))";
                 }
-            }
-            else
-            {
+            } else {
                 $where .= $where ? " OR " : "" ;
                 $where .= "( ra.report_access_type = " . COMPANY_RESTRICTED . " AND ra.report_access_id IN ( " . $cid . ") )";
             }
         }
         // Project specific reports
-        if ( $search == 'all' || $search == 'project' )
-        {
-            if ( $search == 'all' )
-            {
+        if ( $search == 'all' || $search == 'project' ) {
+            if ( $search == 'all' ) {
                 $project= new CProject();
                 $project_list = $project->getAllowedRecords($uid, 'projects.project_id');
-                if ( count( $project_list ) )
-                {
+                if ( count( $project_list ) ) {
                     $where .= $where ? " OR " : "" ;
                     $where .= "( ra.report_access_type = " . PROJECT_RESTRICTED . " AND ra.report_access_id IN (" . implode( ', ', $project_list ) . "))" ;
                 }
-            }
-            else
-            {
+            } else {
                 $where .= $where ? " OR " : "" ;
                 $where .= "( ra.report_access_type = " . PROJECT_RESTRICTED . " AND ra.report_access_id IN ( " .$pid . " ) )";
 
             }
         }
 // User specific reports
-        if ( $search == 'all' || $search == 'user')
-        {
+        if ( $search == 'all' || $search == 'user') {
             // User restricted report
             $where .= $where ? " OR " : "" ;
             $where .= " ( ra.report_access_type = ". USER_RESTRICTED . " AND ra.report_access_id = " . $uid . ")" ;
@@ -223,8 +152,7 @@ class CReport extends CW2pObject {
         }
 // Admin report
         $perms =& $AppUI->acl();
-        if ( ( $search == 'admin' || $search == 'user' ) && $perms->checkModule( 'admin', 'view' ) )
-        {
+        if ( ( $search == 'admin' || $search == 'user' ) && $perms->checkModule( 'admin', 'view' ) ) {
             $where .= $where ? " OR " : "" ;
             $where .= " ( report_type = " . ADMIN_REPORT . ")" ;
         }
@@ -236,7 +164,14 @@ class CReport extends CW2pObject {
         return $q->loadColumn();
     }
 
-    // Retrieve list of projects that can use this report
+    /**
+     * @param $uid
+     * @param string $fields
+     * @param string $orderby
+     * @param null $index
+     * @param null $extra
+     * @return array|Associative
+     */
     public function getTargetProjects( $uid, $fields='*', $orderby='', $index=NULL, $extra=NULL ) {
         global $AppUI;
         if ( ! $this->report_id ) {
@@ -245,8 +180,7 @@ class CReport extends CW2pObject {
 
         $proj = new CProject();
 
-        if ( $this->report_type == RESTRICTED_REPORT )
-        {
+        if ( $this->report_type == RESTRICTED_REPORT ) {
             $q = new w2p_Database_Query();
             $q->addTable('flexreport_access');
             $q->addQuery('*');
@@ -255,25 +189,22 @@ class CReport extends CW2pObject {
             $all_project = false ;
             $company_list = '';
             foreach ( $access_rights as $ra ) {
-                switch ( $ra['report_access_type'] )
-                {
+                switch ( $ra['report_access_type'] ) {
                     case COMPANY_RESTRICTED :
-                            $company_list .= ($company_list ? ',' : '').$ra['report_access_id'];
-                            break;
+                        $company_list .= ($company_list ? ',' : '').$ra['report_access_id'];
+                        break;
                     case PROJECT_RESTRICTED :
-                            $projects[] = $ra['report_access_id'];
-                            break;
+                        $projects[] = $ra['report_access_id'];
+                        break;
                     case USER_RESTRICTED :
-                            $all_project = true ;
-                            break;
+                        $all_project = true ;
+                        break;
                 }
             }
-            if ( ! $all_project )
-            {
+            if ( ! $all_project ) {
                 // Retrieve company list
                 $company_projects = array();
-                if ( $company_list )
-                {
+                if ( $company_list ) {
                     $q = new w2p_Database_Query();
                     $q->addTable('projects');
                     $q->addQuery('project_id');
@@ -291,8 +222,16 @@ class CReport extends CW2pObject {
         return $proj->getAllowedRecords( $uid, $fields, $orderby, $index, $extra );
     }
 
-    // Retrieve list of companies that can use this report
-    public function getTargetCompanies( $uid, $fields='*', $orderby='', $index=NULL, $extra=NULL ) {
+    /**
+     * @param $uid
+     * @param string $fields
+     * @param string $orderby
+     * @param null $index
+     * @param null $extra
+     * @return array|Associative
+     */
+    public function getTargetCompanies( $uid, $fields='*', $orderby='', $index=NULL, $extra=NULL )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('report_access_id');
@@ -312,8 +251,16 @@ class CReport extends CW2pObject {
         return $Cpy->getAllowedRecords( $uid, $fields, $orderby, $index, $extra );
     }
 
-    // Retrieve list of users that can use this report
-    public function getTargetUsername( $uid, $fields='', $orderby='', $index=NULL, $extra=NULL ) {
+    /**
+     * @param $uid
+     * @param string $fields
+     * @param string $orderby
+     * @param null $index
+     * @param null $extra
+     * @return array|Associative
+     */
+    public function getTargetUsername( $uid, $fields='', $orderby='', $index=NULL, $extra=NULL )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('report_access_id');
@@ -338,15 +285,13 @@ class CReport extends CW2pObject {
         return $q->loadHashList('user_id');
     }
 
-    /*
-    *    Display a row with project information and links
-    *         @param    project_id (if set allowed project column is not shown)
-    *         @param    flag = true if edit link to be shown
-    *         @param    flag = true if delete link to be shown
-    *         @param    flag 'all' display allowed project column as blank
-    *                      'project' display allowed projects name with links
-    */
-    public function show_report( $project_id, $canEdit, $target='all' ) {
+    /**
+     * @param $project_id
+     * @param $canEdit
+     * @param string $target
+     */
+    public function show_report( $project_id, $canEdit, $target='all' )
+    {
         global $AppUI ;
         $id_list = array();
         if ( ! $project_id && $target == 'project' ) {
@@ -354,8 +299,7 @@ class CReport extends CW2pObject {
         }
         $rowspan = count( $id_list ) ? "rowspan=\"" . count( $id_list ) . "\" " : "";
         echo "<tr>\n<td valign=\"top\" ". $rowspan . ">";
-        if ( $canEdit )
-        {
+        if ( $canEdit ) {
             echo "<a href=\"?m=flexreports&a=addedit&report_id=" . $this->report_id . "\">";
             echo "<img src=\"./modules/flexreports/images/pencil.gif\" width=\"12\" heigth=\"12\" border=\"0\" alt=\"". $AppUI->_('Edit report') . "\" >\n" ;
             echo "</a>";
@@ -370,17 +314,12 @@ class CReport extends CW2pObject {
         echo $s ;
         $description = $this->report_description ? $this->report_description : "&nbsp;" ;
         echo "<td valign=\"top\" ". $rowspan . ">" . $description . "</td>" ;
-        if ( ! $project_id && $target == 'all' )
-        {
+        if ( ! $project_id && $target == 'all' ) {
             echo "<td valign=\"top\">" . $AppUI->_("All projects") ."</td>" ;
-        }
-        else
-        {
-            if ( ! $project_id )
-            {
+        } else {
+            if ( ! $project_id ) {
                 $s = '';
-                foreach ( $id_list as $pid => $pname )
-                {
+                foreach ( $id_list as $pid => $pname ) {
                     $s .=  $s ? "</tr>\n<tr><td>" : "<td>" ;
                     $s .= "<a href=\"?m=flexreports&a=view&report_id=" . $this->report_id ."&project_id=" . $pid . "\" >" . $pname . "</a></td>\n" ;
                 }
@@ -390,7 +329,13 @@ class CReport extends CW2pObject {
         echo "</tr>\n" ;
     }
 
-    public function addField( $field_ref, $rank ) {
+    /**
+     * @param $field_ref
+     * @param $rank
+     * @return null
+     */
+    public function addField( $field_ref, $rank )
+    {
         global $field_desc;
 
         $nc = strpos($field_ref, ':');
@@ -411,7 +356,12 @@ class CReport extends CW2pObject {
         return NULL ;
     }
 
-    public function getReportField( $fields = "*" ) {
+    /**
+     * @param string $fields
+     * @return Array
+     */
+    public function getReportField( $fields = "*" )
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_fields');
         $q->addQuery( $fields );
@@ -420,7 +370,12 @@ class CReport extends CW2pObject {
         return $q->loadList();
     }
 
-    function addReportFilter( $filter ) {
+    /**
+     * @param $filter
+     * @return null
+     */
+    public function addReportFilter( $filter )
+    {
         global $field_desc;
         $field_ref = $filter[1];
         $nc = strpos($field_ref, ':');
@@ -444,7 +399,12 @@ class CReport extends CW2pObject {
         return NULL ;
     }
 
-    function getReportFilter( $fields = '*') {
+    /**
+     * @param string $fields
+     * @return Array
+     */
+    public function getReportFilter( $fields = '*')
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_filters');
         $q->addQuery( $fields );
@@ -452,7 +412,13 @@ class CReport extends CW2pObject {
         return $q->loadList();
     }
 
-    function addReportAccess( $type, $id ) {
+    /**
+     * @param $type
+     * @param $id
+     * @return null
+     */
+    public function addReportAccess( $type, $id )
+    {
         global $AppUI;
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
@@ -465,7 +431,11 @@ class CReport extends CW2pObject {
         return NULL ;
     }
 
-    function getReportAccess() {
+    /**
+     * @return Array
+     */
+    public function getReportAccess()
+    {
         $q = new w2p_Database_Query();
         $q->addTable('flexreport_access');
         $q->addQuery('*');

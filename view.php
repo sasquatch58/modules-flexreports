@@ -17,7 +17,7 @@ $df = $AppUI->getPref('SHDATEFORMAT');
 *	Retrieve report parameters
 */
 $report_id = w2PgetParam( $_REQUEST, 'report_id', 0 );
-$report = new CReport();
+$report = new CFlexReport();
 if ( ! $report_id || ! $report->load( $report_id ))
 {
 	$AppUI->setMsg('Report', UI_MSG_ERROR ) ;
@@ -464,7 +464,7 @@ if ($do_report) {
 * 	Create FROM clause
 */
 
-	$q = new CReportQuery( $project_id );
+	$q = new CFlexReport_Query( $project_id );
 	if ( $report->report_reference ) {
 		$field_desc['users']['field_list'] = $user_field_list ;
 		$reference = $user_function_list[$report->report_reference][0];

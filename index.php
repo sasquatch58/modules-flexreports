@@ -12,18 +12,13 @@ if ( ! $perms->checkModule( 'Flexreports', 'view', $user_id ) ) {
 $project_id = intval( w2PgetParam( $_REQUEST, 'project_id', 0 ));
 $tab = intval( w2PgetParam( $_REQUEST, 'project_id', 0 ) );
 
-// Set place state parameters
-$AppUI->savePlace();
-
 // Retrieve permissions
 $canAdd = $perms->checkModule( 'Flexreports' , 'add' , $user_id ) ;
 
 // Setup the title block
-if ( $tab == 0 )
-{
+if ( $tab == 0 ) {
 	$titleBlock = new w2p_Theme_TitleBlock( 'FlexReports', 'colored_folder.png', $m, "$m.$a" );
-	if ( $canAdd )
-    {
+	if ( $canAdd ) {
 		$titleBlock->addCell(
 			'<form action="?m=flexreports&amp;a=addedit" method="post">
 				<input type="submit" class="button" value="'.$AppUI->_('new report').'" />
@@ -32,7 +27,7 @@ if ( $tab == 0 )
 	$titleBlock->show() ;
 }
 
-$report = new CReport();
+$report = new CFlexReport();
 $colspan = $project_id ? 3 : 4 ;
 //--- print Table Headers ----//
 ?>
@@ -43,18 +38,15 @@ function popTest()
 }
 </script>
 <table border="0" width="100%" cellspacing="1" cellpadding="2" class="tbl">
-<tr>
-	<th width="1%">&nbsp;</th>
-	<th width="30%" nowrap="nowrap"><?php echo $AppUI->_('Report name') ; ?></th>
-	<th width="<?php echo $project_id ? '70' : '50' ; ?>%"><?php echo $AppUI->_('Report description') ; ?></th>
-	<?php
-	if ( ! $project_id )
-    {
-	?>
-		<th width="20%" "nowrap="nowrap"><?php echo $AppUI->_('Allowed projects') ; ?></th>
-	<?php
-    }
-	echo "\n</tr>" ;
+    <tr>
+        <th width="1%">&nbsp;</th>
+        <th width="30%" nowrap="nowrap"><?php echo $AppUI->_('Report name') ; ?></th>
+        <th width="<?php echo $project_id ? '70' : '50' ; ?>%"><?php echo $AppUI->_('Report description') ; ?></th>
+        <?php if ( ! $project_id ) { ?>
+            <th width="20%" "nowrap="nowrap"><?php echo $AppUI->_('Allowed projects') ; ?></th>
+        <?php } ?>
+    </tr>
+<?php
 /*
 * Retrieve reports that the current user can display for all projects 
 */

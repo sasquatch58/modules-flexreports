@@ -29,31 +29,30 @@ $table_list = array_keys( $field_desc );
 
 $select_reference = w2PgetParam( $_POST, 'reference', '');
 
-if ( $select_reference )
+if ( $select_reference ) {
 	// Report referenced by users table : 
 	//	- display user function table
 	//	- add user fields for selection
-	{
+
 	$field_desc['users']['field_list'] = $user_field_list ;
-	foreach ( $user_function_list as $u )
+	foreach ( $user_function_list as $u ) {
 		$user_function_select[]= $u[1];
-	}
-else
-	{
+    }
+} else {
 	$field_desc['users']['field_list'] = array() ;
-	}
+}
 ?>
-<table cellpadding="4" cellspacing="0" border="0" class="std" >
 <form name="fieldsFrm" action="index.php?m=flexreports&a=do_report_aed" method="post">
-<input type="hidden" name="selected_field1_list" value="<?php implode(',', $selected_field1 ) ; ?>" />
-<input type="hidden" name="selected_field2_list" value="<?php implode(',', $selected_field2 ) ; ?>" />
-<input type="hidden" name="report_layout" value="<?php echo $report->report_layout ; ?>" />
-<tr>
+    <input type="hidden" name="selected_field1_list" value="<?php implode(',', $selected_field1 ) ; ?>" />
+    <input type="hidden" name="selected_field2_list" value="<?php implode(',', $selected_field2 ) ; ?>" />
+    <input type="hidden" name="report_layout" value="<?php echo $report->report_layout ; ?>" />
+
+    <table cellpadding="4" cellspacing="0" border="0" class="std" >
+        <tr>
 <?php
 // Generate select field list from field description array
 // One select for each DB table
-if ( $select_reference )
-{
+if ( $select_reference ) {
     $ncols = 0 ;
     foreach( $table_list as $tbl ) {
         if ( count( $desc_field[$tbl]['field_list'] ) ) {
@@ -61,7 +60,8 @@ if ( $select_reference )
         }
     }
     ?>
-    <td align="right" nowrap="nowrap" align="center" valign="top"><strong><?php echo $AppUI->_('User function') ; ?></strong>
+    <td align="right" nowrap="nowrap" align="center" valign="top">
+        <strong><?php echo $AppUI->_('User function') ; ?></strong>
     <br><br>
     <?php
         echo arraySelect( $user_function_select, 'user_function', 'class="text" size="1"', $report->report_reference, true );

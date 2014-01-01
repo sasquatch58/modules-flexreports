@@ -29,8 +29,8 @@ if ( count($report_filters) ) {
 			$selected_filter[] = $temp ;
 		} else {
 			$selected_condition[] = $temp ;
-			}
-		}
+        }
+    }
 }
 /*
 * 	Build list of available filters for select
@@ -42,10 +42,11 @@ $table = array_keys( $field_desc );
 $filter_select_array = array();
 foreach ( $table as $tbl ) {
 	foreach ( $field_desc[$tbl]['field_list'] as $field => $filter ) {
-		if ( $filter[4] > 0 )
+		if ( $filter[4] > 0 ) {
 			$filter_select_array[$tbl][$tbl.':'.$field] = $AppUI->_($field);
-		}
-	}
+        }
+    }
+}
 $selectNone = array( 0 => $AppUI->_('None').".............."); // Should keep the dots for IE (pb with redimensioning select options)
 
 ?>
@@ -59,11 +60,11 @@ function CFilter( filterType, fieldTable, fieldName, filterPredef ) {
 	this.fieldName = fieldName;
 	this.filterPredef = filterPredef;
 	return;
-	}
+}
 <?php
 	// generate a javascript array defining the filter type of each field
 	foreach ( $table as $tbl ) {
-		foreach( $field_desc[$tbl]['field_list'] as $field =>$filter )
+		foreach( $field_desc[$tbl]['field_list'] as $field =>$filter ) {
 			if ( $filter[4] > 0 ) {
 				$param = array();
 				$param[0] = "\"" . $filter[4] . "\"";
@@ -72,20 +73,16 @@ function CFilter( filterType, fieldTable, fieldName, filterPredef ) {
 				$param[2] = "\"" . ( $filter[4] == 6 ? $filter[0] : "" ) . "\"" ;
 				$field_tbl = "\"" . ( $nc = strpos( $filter[5], "|") ? substr($filter[5], $nc+1) : $filter[5] ) . "\"";
 				$param[3] = "\"" . ( $filter[4] >= 4  ? $predefined_value[$fieldtable] : "" ) . "\"";
-//				echo "temp = new Array(".$filter[4].",'" . $filter[5] . "','" . $join_field . "','" . $predef . "');\n";
-//				echo "filter_type['" . $tbl . ':' . $field . "']=temp;\n" ;
-?>
-filterArray[<?php echo "\"$tbl:$field\""; ?>] = new CFilter( <?php echo implode( ", ", $param ); ?> );
-<?php
-				}
-		}
-	?>
-var table_name = new Array();
-	<?php
+                ?>filterArray[<?php echo "\"$tbl:$field\""; ?>] = new CFilter( <?php echo implode( ", ", $param ); ?> );<?php
+            }
+        }
+    }
+	?>var table_name = new Array();<?php
 	// generate javascript array for table name translation
 	echo "\ntable_name[\"\"] = \"-\" ; " ;
-	foreach ( $table as $tbl )
+	foreach ( $table as $tbl ) {
 		echo "\ntable_name[\"" . $tbl . "\"]= \"" . $AppUI->_($tbl) . "\";" ;
+    }
 	echo "\n" ;
 	?>
 
@@ -115,7 +112,7 @@ var select_operator = new Array(
 $s = '';
 foreach ( $operator_list as $op ) {
 	$s .= ( $s ? ",\n" : "" ) . "'" . $AppUI->_($op) ."'" ;
-	}
+}
 echo $s ;
 ?>
 					);
@@ -130,10 +127,10 @@ function updateSelect( table, field ) {
 		if ( field.options.selectedIndex <= 0 ) {
 			alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
 			return false ;
-			}
+        }
 		var name = field.options[field.options.selectedIndex].value;
 		var type = filterArray[name].filterType;
-		}
+    }
 	// Set new options
 	var flagArray = operator_option[type] ;
 	var Arraycount = 0 ;
@@ -144,8 +141,8 @@ function updateSelect( table, field ) {
 			opt = new Option( select_operator[i], i );
 			selectArray.options[Arraycount] = opt ;
 			Arraycount++;
-			}
-		}
+        }
+    }
 	selectArray.options.selectedIndex=0;
 	// Show appropriate value input element
 	var inputvalue = getCellsByName( "input", table + "_inputvalue" )[0];
@@ -156,12 +153,12 @@ function updateSelect( table, field ) {
 		filter_value.readOnly="readOnly";
 		if ( type < 12 ) {
 			getCellsByName( "input", table + "_inputbutton" )[0].style.visibility="visible";
-			}
+        }
 	} else {
 		getCellsByName( "input", table + "_inputbutton" )[0].style.visibility="hidden";
 		filter_value.readOnly="";
-		}
-	}
+    }
+}
 
 function deleteFilter( table ) {
 	var box = getCellsByName( "input", table + "_delete");
@@ -170,14 +167,14 @@ function deleteFilter( table ) {
 		if ( box[i].checked ) {
 			var rank = i+3 ;
 			document.getElementById(table).deleteRow(rank);
-			}
-		}
+        }
+    }
 	counter.value = getCellsByName( "input", table + "_delete").length ;
 	if ( counter.value == 0 ) {
 		var f = document.getElementById( table + "_button" );
 		f.style.visibility = "hidden" ;
-		}
-	}
+    }
+}
 
 function addFilter( table ) {
 
@@ -187,22 +184,22 @@ function addFilter( table ) {
 	var valuename=eval("document.filtersFrm." + table + "_inputvaluename" );
 	// check entries
 	if ( field.options.selectedIndex <= 0 ) {
-			alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
-			return false ;
-			}
+        alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
+        return false ;
+    }
 	if ( operator.options.selectedIndex <= 0 ) {
-			alert("<?php echo $AppUI->_('InvalidOperatorSelection', UI_OUTPUT_JS); ?>");
-			return false ;
-			}
+        alert("<?php echo $AppUI->_('InvalidOperatorSelection', UI_OUTPUT_JS); ?>");
+        return false ;
+    }
 	if ( table == "condition" && operator.options.selectedIndex < 12 && valuename.value.length == 0 ) {
-			alert("<?php echo $AppUI->_('InvalidValueInput', UI_OUTPUT_JS); ?>");
-			return false ;
-			}
+        alert("<?php echo $AppUI->_('InvalidValueInput', UI_OUTPUT_JS); ?>");
+        return false ;
+    }
 	// Check input value does not contain '|'
 	if ( valuename.value.lastIndexOf('|') >= 0 ) {
 		alert("<?php echo $AppUI->_('InvalidValueInput', UI_OUTPUT_JS) ; ?>") ;
 		return false;
-		}
+    }
 	// Initiate var label if filter table
 	// Check label is set if value is not set
 	if ( table == 'filter' ) {
@@ -210,21 +207,21 @@ function addFilter( table ) {
 		if ( valuename.value.length == 0 && label.value.length == 0 ) {
 			alert( "<?php echo $AppUI->_('NoFilterLabel') ; ?>" );
 			return false ;
-			}
+        }
 		if ( label.value.lastIndexOf('|') >= 0 ) {
 			alert("<?php echo $AppUI->_('InvalidLabelInput', UI_OUTPUT_JS) ; ?>") ;
 			return false;
-			}
-		}
+        }
+    }
 	// Check input value is numeric if field type == 1
 	if ( valuename.value.length > 0 ) {
 		if ( filterArray[field.options[field.options.selectedIndex].value].filterType == 1 ) {
 			if ( isNaN(valuename.value) ) {
 				alert("<?php echo $AppUI->_('InvalidValueInput', UI_OUTPUT_JS) ; ?>") ;
 				return false;
-				}
-			}
-		}
+            }
+        }
+    }
 	// Create new row from input
 	var counter = eval( "document.filtersFrm." + table + "_count" );
 	var rownum = parseInt(counter.value)+3;
@@ -291,7 +288,7 @@ function addFilter( table ) {
 		input.value=valuename.value;
 	} else {
 		input.value=value.value
-		}
+    }
 	cell.appendChild(input);
 	row.appendChild(cell);
 	// Label only for filter
@@ -310,7 +307,7 @@ function addFilter( table ) {
 		row.appendChild(cell);
 		// Reset label input
 		label.value="";
-		}
+    }
 	// include here a delete button
 	var cell=document.createElement("td");
 	cell.align="center";
@@ -329,7 +326,7 @@ function addFilter( table ) {
 	valuename.value="";
 	// Update number of fields selected as condtions or filter
 	counter.value++;
-	}
+}
 
 var opened_window ;
 function popFilterValue( table ) {
@@ -338,10 +335,11 @@ function popFilterValue( table ) {
 	var fieldtable = filterArray[text].fieldTable;
 	var fieldname = filterArray[text].fieldName;
 	var showdefault = 1 ;
-	if ( filterArray[text].filterType < 6 )
+	if ( filterArray[text].filterType < 6 ) {
 		showdefault = 0 ;
+    }
 	opened_window = window.open('./index.php?m=flexreports&a=selector&suppressHeaders=1&fieldtable='+fieldtable+'&fieldname='+fieldname+'&returnfield='+table+'&callback=setFilterValue&showdefault='+showdefault, table,'height=600,width=400,resizable,scrollbars=yes');
-	}
+}
 
 function setFilterValue( field, selected_id, selected_name ) {
 	var save_id = eval('document.filtersFrm.' + field + "_inputvalue") ;
@@ -352,7 +350,7 @@ function setFilterValue( field, selected_id, selected_name ) {
 		save_id.value = '';
 		save_name.value = '';
 		return false;
-		}
+    }
 	if ( selected_id != "0" ) {
 		save_id.value = selected_id ;
 		save_name.value = selected_name ;
@@ -361,138 +359,130 @@ function setFilterValue( field, selected_id, selected_name ) {
 		var fieldname = fieldNameSelect.options[fieldNameSelect.options.selectedIndex].value;
 		save_id.value = "{" + filterArray[fieldname].filterPredef + "}";
 		save_name.value = save_id.value;
-		}	
+    }
 	opened_window.close();
-	}
+}
 </script>
 
-<table cellpadding="0" cellspacing="0" border="1" class="std">
 <form name="filtersFrm" action="index.php?m=flexreports&a=do_report_aed" method="post">
-<input type="hidden" name="condition_count" value="<?php echo count($selected_condition) ; ?>" />
-<input type="hidden" name="filter_count" value="<?php echo count($selected_filter) ; ?>" />
-<input type="hidden" name="condition_list" value="" />
-<input type="hidden" name="filter_list" value="" />
-<tr>
-<td width="45%" valign="top">
-<table id="condition" cellpadding="4" cellspacing="0" border="0" class="tbl" width="100%">
-<tr>
-	<td colspan="4"><strong><?php echo $AppUI->_('List of conditions'); ?></strong></td>
-</tr>
-<tr><td colspan="4">&nbsp;</td></tr>
-<tr>
-	<td width="35%">
-	<?php echo arraySelectWithOptgroup( $filter_select_array, 'condition_selectfield', 'size="1" class="text" onChange="javascript:updateSelect(\'condition\', this)"' , 0, false, 'Select field' );?>
-	</td>
-	<td width="20%">
-	<?php echo arraySelect( $selectNone, 'condition_selectoperator', 'size="1" class="text"', 0, true ); ?>
-	</td>
-	<td width="45%" nowrap="nowrap">
-	<input type="text" class="text" name="condition_inputvaluename" size="20" value="" />
-	<input type="hidden" name="condition_inputvalue" value="" />
-	<input type="button" class="button" name="condition_inputbutton" style="visibility:hidden"  value="<?php echo $AppUI->_('Select') ; ?>" onClick="javascript:popFilterValue('condition')" />
-	</td>
-	<td width="1%" align="center">
-	<input type="button" class="button" name="condition_validate" value="&darr;" onClick="javascript:addFilter('condition')" />
-	</td>
-</tr>
-<?php
-	if ( count($selected_condition) )
-		foreach ( $selected_condition as $v )
-			{
-			?>
-			<tr>
-				<td>
-					<input type="text" class="text" name="condition_fieldname" size="22" readOnly value="<?php echo $v['name'] ; ?>" />
-					<input type="hidden" name="condition_field" value="<?php echo $v['index'] ; ?>" />
-				</td>
-				<td>
-					<input type="text" class="text" name="condition_operatorname" size="20" readOnly value="<?php echo $AppUI->_($operator_list[$v['operator']]) ; ?>" />
-					<input type="hidden" name="condition_operator" value="<?php echo $v['operator'] ; ?>" />
-				</td>
-				<td>
-					<input type="text" class="text" name="condition_valuename" size="20" readOnly value="<?php echo $v['valuename'] ; ?>" />
-					<input type="hidden" name="condition_value" value="<?php echo $v['value'] ; ?>" />
-				</td>
-				<td align="center">
-					<input type="checkbox" name="condition_delete" unchecked />
-				</td>
-			</tr>
-			<?php
-			}
-	?>
-<tr>
-	<td colspan="4" align="right">
-	<input type="button" class="button" id="condition_button" style="visibility:<?php echo count($selected_condition) ? 'visible' : 'hidden' ; ?>" value="<?php echo $AppUI->_('Delete checked item'); ?>" onClick="javascript:deleteFilter('condition')" />
-	</td>
-</tr>
-</table>
-</td>
-<td width="55%" valign="top">
-<table id="filter" cellpadding="4" cellspacing="0" border="0" class="tbl" width="100%">
-<tr>
-	<td colspan="5"><strong><?php echo $AppUI->_('List of filters'); ?></strong></td>
-</tr>
-<tr><td colspan="5">&nbsp;</td></tr>
-<tr>
-	<td width="25%">
-	<?php echo arraySelectWithOptgroup( $filter_select_array, 'filter_selectfield', 'size="1" class="text" onChange="javascript:updateSelect(\'filter\', this)"' , 0, false, 'Select field' );?>
-	</td>
-	<td width="19%">
-	<?php echo arraySelect( $selectNone, 'filter_selectoperator', 'size="1" class="text"', 0, true ); ?>
-	</td>
-	<td width="30%" nowrap="nowrap">
-	<input type="text" class="text" name="filter_inputvaluename" size="20" value="" />
-	<input type="hidden" class="text" name="filter_inputvalue" value="" />
-	<input type="button" class="button" name="filter_inputbutton" style="visibility:hidden" value="<?php echo $AppUI->_('Select') ; ?>" onClick="javascript:popFilterValue('filter')" />
-	</td>
-	<td width="25%">
-	<input type="text" class="text" name="filter_inputlabel" size="20" value="" />
-	</td>
-	<td width="1%" align="center">
-	<input type="button" class="button" name="filter_validate" value="&darr;" onClick="javascript:addFilter('filter')" />
-	</td>
-</tr>
-<?php
-	if ( count($selected_filter) )
-		foreach ( $selected_filter as $v )
-			{
-			?>
-			<tr>
-				<td>
-					<input type="text" class="text" name="filter_fieldname" size="22" readonly value="<?php echo $v['name'] ; ?>" />
-					<input type="hidden" name="filter_field" value="<?php echo $v['index'] ; ?>" />
-				</td>
-				<td>
-					<input type="text" class="text" name="filter_operatorname" size="20" readonly value="<?php echo $AppUI->_($operator_list[$v['operator']]) ; ?>" />
-					<input type="hidden" name="filter_operator" value="<?php echo $v['operator'] ; ?>" />
-				</td>
-				<td>
-					<input type="text" class="text" name="filter_valuename" size="20" readonly value="<?php echo $v['valuename'] ; ?>" />
-					<input type="hidden" name="filter_value" value="<?php echo $v['value']; ?>" />
-				</td>
-				<td>
-					<input type="text" class="text" name="filter_label" size="20" readonly value="<?php echo $v['label'] ; ?>" />
-				</td>
-				<td align="center">
-					<input type="checkbox" name="filter_delete" unchecked />
-				</td>
-			</tr>
-			<?php
-			}
-	// Display button for delete here
-	?>
-<tr>
-	<td colspan="5" align="right">
-	<input type="button" class="button" id="filter_button" style="visibility:<?php echo count($selected_filter) ? 'visible' : 'hidden' ; ?>" value="<?php echo $AppUI->_('Delete checked item'); ?>" onClick="javascript:deleteFilter('filter')" />
-	</td>
-</tr>
-</table>
-</td>
-</td>
-</tr>
+    <input type="hidden" name="condition_count" value="<?php echo count($selected_condition) ; ?>" />
+    <input type="hidden" name="filter_count" value="<?php echo count($selected_filter) ; ?>" />
+    <input type="hidden" name="condition_list" value="" />
+    <input type="hidden" name="filter_list" value="" />
 
+    <table cellpadding="0" cellspacing="0" border="1" class="std">
+        <tr>
+            <td width="45%" valign="top">
+                <table id="condition" cellpadding="4" cellspacing="0" border="0" class="tbl" width="100%">
+                    <tr>
+                        <td colspan="4"><strong><?php echo $AppUI->_('List of conditions'); ?></strong></td>
+                    </tr>
+                    <tr><td colspan="4">&nbsp;</td></tr>
+                    <tr>
+                        <td width="35%">
+                            <?php echo arraySelectWithOptgroup( $filter_select_array, 'condition_selectfield', 'size="1" class="text" onChange="javascript:updateSelect(\'condition\', this)"' , 0, false, 'Select field' );?>
+                        </td>
+                        <td width="20%">
+                            <?php echo arraySelect( $selectNone, 'condition_selectoperator', 'size="1" class="text"', 0, true ); ?>
+                        </td>
+                        <td width="45%" nowrap="nowrap">
+                            <input type="text" class="text" name="condition_inputvaluename" size="20" value="" />
+                            <input type="hidden" name="condition_inputvalue" value="" />
+                            <input type="button" class="button" name="condition_inputbutton" style="visibility:hidden"  value="<?php echo $AppUI->_('Select') ; ?>" onClick="javascript:popFilterValue('condition')" />
+                        </td>
+                        <td width="1%" align="center">
+                            <input type="button" class="button" name="condition_validate" value="&darr;" onClick="javascript:addFilter('condition')" />
+                        </td>
+                    </tr>
+                    <?php if ( count($selected_condition) ) {
+                        foreach ( $selected_condition as $v ) { ?>
+                            <tr>
+                                <td>
+                                    <input type="text" class="text" name="condition_fieldname" size="22" readOnly value="<?php echo $v['name'] ; ?>" />
+                                    <input type="hidden" name="condition_field" value="<?php echo $v['index'] ; ?>" />
+                                </td>
+                                <td>
+                                    <input type="text" class="text" name="condition_operatorname" size="20" readOnly value="<?php echo $AppUI->_($operator_list[$v['operator']]) ; ?>" />
+                                    <input type="hidden" name="condition_operator" value="<?php echo $v['operator'] ; ?>" />
+                                </td>
+                                <td>
+                                    <input type="text" class="text" name="condition_valuename" size="20" readOnly value="<?php echo $v['valuename'] ; ?>" />
+                                    <input type="hidden" name="condition_value" value="<?php echo $v['value'] ; ?>" />
+                                </td>
+                                <td align="center">
+                                    <input type="checkbox" name="condition_delete" unchecked />
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    } ?>
+                    <tr>
+                        <td colspan="4" align="right">
+                        <input type="button" class="button" id="condition_button" style="visibility:<?php echo count($selected_condition) ? 'visible' : 'hidden' ; ?>" value="<?php echo $AppUI->_('Delete checked item'); ?>" onClick="javascript:deleteFilter('condition')" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td width="55%" valign="top">
+                <table id="filter" cellpadding="4" cellspacing="0" border="0" class="tbl" width="100%">
+                    <tr>
+                        <td colspan="5"><strong><?php echo $AppUI->_('List of filters'); ?></strong></td>
+                    </tr>
+                    <tr><td colspan="5">&nbsp;</td></tr>
+                    <tr>
+                        <td width="25%">
+                            <?php echo arraySelectWithOptgroup( $filter_select_array, 'filter_selectfield', 'size="1" class="text" onChange="javascript:updateSelect(\'filter\', this)"' , 0, false, 'Select field' );?>
+                        </td>
+                        <td width="19%">
+                            <?php echo arraySelect( $selectNone, 'filter_selectoperator', 'size="1" class="text"', 0, true ); ?>
+                        </td>
+                        <td width="30%" nowrap="nowrap">
+                            <input type="text" class="text" name="filter_inputvaluename" size="20" value="" />
+                            <input type="hidden" class="text" name="filter_inputvalue" value="" />
+                            <input type="button" class="button" name="filter_inputbutton" style="visibility:hidden" value="<?php echo $AppUI->_('Select') ; ?>" onClick="javascript:popFilterValue('filter')" />
+                        </td>
+                        <td width="25%">
+                            <input type="text" class="text" name="filter_inputlabel" size="20" value="" />
+                        </td>
+                        <td width="1%" align="center">
+                            <input type="button" class="button" name="filter_validate" value="&darr;" onClick="javascript:addFilter('filter')" />
+                        </td>
+                    </tr>
+                    <?php if ( count($selected_filter) ) {
+                        foreach ( $selected_filter as $v ) { ?>
+                            <tr>
+                                <td>
+                                    <input type="text" class="text" name="filter_fieldname" size="22" readonly value="<?php echo $v['name'] ; ?>" />
+                                    <input type="hidden" name="filter_field" value="<?php echo $v['index'] ; ?>" />
+                                </td>
+                                <td>
+                                    <input type="text" class="text" name="filter_operatorname" size="20" readonly value="<?php echo $AppUI->_($operator_list[$v['operator']]) ; ?>" />
+                                    <input type="hidden" name="filter_operator" value="<?php echo $v['operator'] ; ?>" />
+                                </td>
+                                <td>
+                                    <input type="text" class="text" name="filter_valuename" size="20" readonly value="<?php echo $v['valuename'] ; ?>" />
+                                    <input type="hidden" name="filter_value" value="<?php echo $v['value']; ?>" />
+                                </td>
+                                <td>
+                                    <input type="text" class="text" name="filter_label" size="20" readonly value="<?php echo $v['label'] ; ?>" />
+                                </td>
+                                <td align="center">
+                                    <input type="checkbox" name="filter_delete" unchecked />
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    } ?>
+                    <tr>
+                        <td colspan="5" align="right">
+                        <input type="button" class="button" id="filter_button" style="visibility:<?php echo count($selected_filter) ? 'visible' : 'hidden' ; ?>" value="<?php echo $AppUI->_('Delete checked item'); ?>" onClick="javascript:deleteFilter('filter')" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </form>
-</table>
 
 <script language="javascript">
 subForm.push(new FormDefinition(<?php echo $tab;?>, document.filtersFrm, filtersCheck, filtersSave));
