@@ -17,7 +17,7 @@ $canAdd = $perms->checkModule( 'Flexreports' , 'add' , $user_id ) ;
 
 // Setup the title block
 if ( $tab == 0 ) {
-	$titleBlock = new w2p_Theme_TitleBlock( 'FlexReports', 'colored_folder.png', $m, "$m.$a" );
+	$titleBlock = new w2p_Theme_TitleBlock( 'FlexReports', 'report_go.png', $m, "$m.$a" );
 	if ( $canAdd ) {
 		$titleBlock->addCell(
 			'<form action="?m=flexreports&amp;a=addedit" method="post">

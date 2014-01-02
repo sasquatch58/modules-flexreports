@@ -848,7 +848,7 @@ function strusername( $fv ) {
 //        @param    database date field
 function strdate( $fv ) {
     global $df ;
-    $date = intval($fv) ? new CDate($fv) : NULL ;
+    $date = intval($fv) ? new w2p_Utilities_Date($fv) : NULL ;
     return $date ? $date->format($df) : '' ;
     }
 /*
@@ -1254,11 +1254,11 @@ function putUserTimePerPeriod( $record_data, $field, $period_start_date, $period
 */
     function buildArrayHeader( $period_start_date, $period_end_date, $hideNonWorkingDays = true ) {
 //        echo "Build Headers ( $period_start_date, $period_end_date, $hideNonWorkingDays )<br>" ;
-        $sd = new CDate($period_start_date);
+        $sd = new w2p_Utilities_Date($period_start_date);
         if ( $hideNonWorkingDays )
             $sd->next_working_day();
         $sd->setTime( 0, 0, 0 );
-        $ed = new CDate($period_end_date);
+        $ed = new w2p_Utilities_Date($period_end_date);
         $ed->addDays(1);
         $ed->setTime( 0, 0, 0 ) ;
         $days = $ed->dateDiff($sd);
@@ -1269,7 +1269,7 @@ function putUserTimePerPeriod( $record_data, $field, $period_start_date, $period
             if ( $days <= 68) {
                 $day_diff = 7 ;
                 $date = Date_Calc::beginOfWeek( $sd->day, $sd->month, $sd->year );
-                $sd = new CDate($date);
+                $sd = new w2p_Utilities_Date($date);
             } else {
                 $day_diff = 30 ;
                 }
@@ -1301,8 +1301,8 @@ function putUserTimePerPeriod( $record_data, $field, $period_start_date, $period
 //        print_r($timeline);
 //        echo "<br>";
         $time = $timeline[0];
-        $sd = new CDate($timeline[1]);
-        $ed = new CDate($timeline[2]);
+        $sd = new w2p_Utilities_Date($timeline[1]);
+        $ed = new w2p_Utilities_Date($timeline[2]);
         $dateMin = $arrHeader[0];
         $dateMax = $arrHeader[count($arrHeader)-1] ;
         // init output array
@@ -1311,7 +1311,7 @@ function putUserTimePerPeriod( $record_data, $field, $period_start_date, $period
             $output[$arrHeader[$i]->format($df)] = 0 ;
         $days_per_cell = round( $dateMax->dateDiff($dateMin) / ( count($arrHeader) - 1 )) ;
         $day_diff = $ed->dateDiff( $sd );
-        $current_day = new CDate($ed);
+        $current_day = new w2p_Utilities_Date($ed);
         $working_days = 0 ;
         for ( $i=0 ; $i<=$day_diff; $i++) {
             if ( $current_day->isWorkingDay() )
@@ -1327,7 +1327,7 @@ function putUserTimePerPeriod( $record_data, $field, $period_start_date, $period
         $ed->setTime( 23, 59, 59);
         $i = 0 ;
         while ( $sd->before($ed) && $i<count($arrHeader)-1 ) {
-            $date = new CDate( $arrHeader[$i+1] ) ;
+            $date = new w2p_Utilities_Date( $arrHeader[$i+1] ) ;
             $date->addDays(-1);
             $date->setTime( 23, 59, 59 );
             $index = $arrHeader[$i]->format($df);
@@ -1548,7 +1548,7 @@ global $w2Pformat ;
         $pdf->selectFont( "$font_dir/Helvetica.afm" );
         $pdf->addText( round( $pdf->ez['leftMargin'], 2 ), $ypos, 10, $company_name );
         // Current date right
-        $date = new CDate();
+        $date = new w2p_Utilities_Date();
         $xpos = round( $pwidth - $pdf->getTextWidth( 10, $date->format($df)) - $pdf->ez['rightMargin'] , 2);
         $pdf->addText( $xpos, $ypos, 10, $date->format( $df ) );
         $ypos = $ypos - round ( 1.2*$pdf->getFontHeight(12) , 2 ) ;

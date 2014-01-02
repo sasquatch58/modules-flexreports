@@ -12,14 +12,14 @@ if (!defined('W2P_BASE_DIR')){
 
 
 $config = array();
-$config['mod_name'] = 'Flexreports';
-$config['mod_version'] = '0.2';
-$config['mod_directory'] = 'flexreports';
-$config['mod_setup_class'] = 'CSetupFlexReports';
-$config['mod_type'] = 'user';
-$config['mod_ui_name'] = 'FlexReports';
-$config['mod_ui_icon'] = '';
-$config['mod_description'] = 'A module for dynamic reports';
+$config['mod_name']             = 'Flexreports';
+$config['mod_version']          = '0.2';
+$config['mod_directory']        = 'flexreports';
+$config['mod_setup_class']      = 'CSetupFlexReports';
+$config['mod_type']             = 'user';
+$config['mod_ui_name']          = 'FlexReports';
+$config['mod_ui_icon']          = 'report_go.png';
+$config['mod_description']      = 'A module for dynamic reports';
 
 if (@$a == 'setup') {
     echo w2PshowModuleConfig( $config );

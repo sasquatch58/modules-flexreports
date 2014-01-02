@@ -45,7 +45,7 @@ if ( $add_step ) {
 */
 
 $ttl = $report_id > 0 ? 'Edit Report' : 'New Report';
-$titleBlock = new w2p_Theme_TitleBlock( $ttl, 'colored_folder.png', $m, "$m.$a" );
+$titleBlock = new w2p_Theme_TitleBlock( $ttl, 'report_go.png', $m, "$m.$a" );
 $titleBlock->addCrumb( '?m=flexreports', 'reports list' );
 if ( $report_id ) {
 	$titleBlock->addCrumb('?m=flexreports&a=view&report_id=' . $report_id, 'view this report');
@@ -467,7 +467,7 @@ function optionsSave() {
         <input type="hidden" name="add_step" value="1" />
 <?php } ?>
         <input type="hidden" name="report_id" value="<?php echo $report_id;?>" />
-        <input type="hidden" name="report_date" value="<?php $date=new CDate() ; echo $date->format(FMT_DATETIME_MYSQL) ;?>" />
+        <input type="hidden" name="report_date" value="<?php $date=new w2p_Utilities_Date() ; echo $date->format(FMT_DATETIME_MYSQL) ;?>" />
         <input type="hidden" name="report_creator" value="<?php echo $report_id ? $report->report_creator : $AppUI->user_id ; ?>" />
         <input type="hidden" name="report_type" value="<?php echo $report_id ? $report->report_type : 0 ; ?>" />
         <input type="hidden" name="report_layout" value="<?php echo $report->report_layout ; ?>" />

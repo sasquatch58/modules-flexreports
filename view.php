@@ -46,7 +46,7 @@ $report_project_list = array_keys( $target_projects );
 /*
 *	Set Title block
 */
-$titleBlock = new w2p_Theme_TitleBlock( 'View report', 'colored_folder.png', $m, "$m.$a" );
+$titleBlock = new w2p_Theme_TitleBlock( 'View report', 'report_go.png', $m, "$m.$a" );
 $titleBlock->addCrumb( '?m=flexreports', 'report list' );
 if ( $perms->checkModule( 'flexreports', 'edit') && ( $report->report_creator == $AppUI->user_id || $perms->checkModule( 'admin', 'edit' ) ) ) {
 	$titleBlock->addCrumb('?m=flexreports&a=addedit&report_id='. $report->report_id, 'edit this report');
@@ -112,13 +112,13 @@ if ( $report->report_datefilter ) {
 	$period = intval( w2PgetParam($_POST, "period", 0) );
 	$period_value = w2PgetParam($_POST, "pvalue", 1);
 
-	$today = new CDate();
+	$today = new w2p_Utilities_Date();
 	if ($period) {
 //	if period is set dates are defined as an offset relative to today
 		$ts = $today->format(FMT_TIMESTAMP_DATE);
 		$days = $period  * $period_value;
-		$start_date = new CDate($ts);
-		$end_date = new CDate($ts);
+		$start_date = new w2p_Utilities_Date($ts);
+		$end_date = new w2p_Utilities_Date($ts);
 		if ( $period > 0 ) {
 			$end_date->addDays( $days ) ; 
         } else {
@@ -129,8 +129,8 @@ if ( $report->report_datefilter ) {
 // create Date objects from the datetime fields
 // if $list_start_date not defined then set NULL to query all entries since project start date
 // Set end_date to today at initialisation
-		$start_date = intval( $list_start_date ) ? new CDate( $list_start_date ) : NULL ;
-		$end_date = intval( $list_end_date ) ? new CDate( $list_end_date ) : ( $do_report ? NULL : $today ) ;
+		$start_date = intval( $list_start_date ) ? new w2p_Utilities_Date( $list_start_date ) : NULL ;
+		$end_date = intval( $list_end_date ) ? new w2p_Utilities_Date( $list_end_date ) : ( $do_report ? NULL : $today ) ;
     }
 //	Set time
 	if ( $end_date ) $end_date->setTime( 23, 59, 59 );
@@ -361,10 +361,10 @@ if ( $show_period )
 		<?php
 		$period_start_date = w2PgetParam( $_POST, 'list_period_start_date', '');
 		$period_end_date = w2PgetParam( $_POST, 'list_period_end_date', '');
-		$end_date = $period_end_date ? new CDate($period_end_date) : new CDate();
+		$end_date = $period_end_date ? new w2p_Utilities_Date($period_end_date) : new w2p_Utilities_Date();
 		if ( $period_start_date )
 			{
-			$start_date = new CDate($period_start_date) ;
+			$start_date = new w2p_Utilities_Date($period_start_date) ;
 			}
 		else
 			{
@@ -600,7 +600,7 @@ if ($do_report) {
 		$period_time = $show_time[1];
 		$hideNonWorkingDays = $show_time[2];
 		if ( $period_time ) {
-			$date = new CDate();
+			$date = new w2p_Utilities_Date();
 			switch ( $period_time ) {
 				case 'PQ' :
 					$period_end_date = Date_Calc::endOfPrevMonth( $date->day, $date->month, $date->year );
@@ -707,7 +707,7 @@ echo "</table>" ;
 		$pdf->selectFont( "$font_dir/Helvetica.afm" );
 		$pdf->addText( round( $pdf->ez['leftMargin'], 2 ), $ypos, 10, $company_name );
 		// Current date right
-		$date = new CDate();
+		$date = new w2p_Utilities_Date();
 		$xpos = round( $pwidth - $pdf->getTextWidth( 10, $date->format($df)) - $pdf->ez['rightMargin'] , 2);
 		$pdf->addText( $xpos, $ypos, 10, $date->format( $df ) );
 		if ( !$doc_subtitle )
@@ -928,7 +928,7 @@ echo "</table>" ;
 							);
 		$company_name = conv2utf8(w2PgetConfig( 'company_name' ));
 		$header = $docXML->startHFObj();
-		$date = new CDate();
+		$date = new w2p_Utilities_Date();
 		$docXML->addText( 	array( $company_name, conv2utf8($report->report_title), conv2utf8($date->format($df)) ),
 							"HF_Style",
 							null,
