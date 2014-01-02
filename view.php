@@ -18,8 +18,7 @@ $df = $AppUI->getPref('SHDATEFORMAT');
 */
 $report_id = w2PgetParam( $_REQUEST, 'report_id', 0 );
 $report = new CFlexReport();
-if ( ! $report_id || ! $report->load( $report_id ))
-{
+if ( ! $report_id || ! $report->load( $report_id )) {
 	$AppUI->setMsg('Report', UI_MSG_ERROR ) ;
 	$AppUI->setMsg('InvalidID', UI_MSG_ERROR, true );
 	$AppUI->redirect() ;
@@ -35,8 +34,7 @@ $project_id = w2PgetParam( $_REQUEST, 'project_id', 0 );
 */
 $target_projects = $report->getTargetProjects( $AppUI->user_id, 'projects.project_id, project_name' );
 
-if ( count($target_projects) == 0 )
-{
+if ( count($target_projects) == 0 ) {
 	$AppUI->setMsg('NoProjectForDisplay', UI_MSG_ERROR );
 	$AppUI->redirect();
 }
@@ -59,9 +57,7 @@ if ( $project_id ) {
 $titleBlock->show();
 
 // Special code
-if ( $report->report_code )
-{
-	$AppUI->savePlace();
+if ( $report->report_code ) {
 	include_once W2P_BASE_DIR . '/modules/flexreports/' . $report->report_code;
 	exit ;
 }
