@@ -7,6 +7,7 @@ global $AppUI, $baseDir;
 
 
 $report = new CFlexReport();
+$ret = $report->bind( $_POST );
 $del = w2PgetParam( $_POST, 'del', 0 );
 /*
 *	Delete report
@@ -42,13 +43,14 @@ $filter_list = w2PgetParam( $_POST, 'filter_list', '');
 */
 
 $msg = $report->report_id ? "updated" : "added" ;
-
-if ( $msg = $report->store() ) {
-	$AppUI->setMsg( $msg, UI_MSG_ERROR );
-	$AppUI->redirect();
+$report->store();
+if ( !($msg = $report->store()) ) {
+    $AppUI->setMsg( $msg, UI_MSG_ERROR );
+    $AppUI->redirect();
 }
 $AppUI->setMsg( 'Report', UI_MSG_ALERT, true );
 $AppUI->setMsg( $msg, UI_MSG_ALERT, true );
+
 /*
 *	Set access restricted records
 */

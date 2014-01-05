@@ -1,6 +1,6 @@
 <?php 
 if (!defined('W2P_BASE_DIR')){
-  die('You should not access this file directly.');
+    die('You should not access this file directly.');
 }
 
 global $AppUI, $baseDir, $report, $tab;
@@ -63,7 +63,7 @@ if ( $canDelete ) { ?>
 <script language="javascript">
 function delIt() {
     if ( confirm("<?php echo $AppUI->_('doDelete', UI_OUTPUT_JS) . $AppUI->_('report', UI_OUTPUT_JS) ; ?>") ) {
-    document.frmDelete.submit();
+        document.frmDelete.submit();
     }
 }
 </script>
@@ -103,8 +103,8 @@ function MoveField(l1,l2, table) {
 		l2.options[l2.options.length]=o;
 	} else {
 		alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
-		}
 	}
+}
 
 function DelField(l) {
 //	Delete the selected field name from the list
@@ -112,8 +112,8 @@ function DelField(l) {
 		l.options[l.options.selectedIndex]=null;
 	} else {
 		alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
-		}
 	}
+}
 
 function UpField(l) {
 // Move the selected field name up in the list
@@ -128,8 +128,8 @@ function UpField(l) {
 		l.options.selectedIndex = index-1 ;
 	} else {
 		alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
-		}
 	}
+}
 
 function DownField(l) {
 //	Move the selected field name down in the list
@@ -144,8 +144,8 @@ function DownField(l) {
 		l.options.selectedIndex = index+1 ;
 	} else {
 		alert("<?php echo $AppUI->_('InvalidFieldSelection', UI_OUTPUT_JS); ?>");
-		}
 	}
+}
 
 /*
 *	SubForm functions
@@ -199,7 +199,7 @@ function copyForm(form, to, fields) {
 					case 'select-one':
 					case 'select-multiple':
 					// Return selected option value
-						if ( elem.id == 'list' ) {
+						if ( elem.id == 'list'|| elem.id == 'selected_field1' ) {
 							var temp = new Array();
 							var count = 0 ;
 							for (var k = 0; k < elem.options.length; k++) {
@@ -504,15 +504,14 @@ function optionsSave() {
                 <td width="10%" align="right" valign="top"><?php echo $AppUI->_('Report layout') ; ?>:</td>
                 <td width="40%">
                 <?php
-                for ( $i=0 ; $i<count($report_layout_list) ;  $i++ )
-                    {
+                for ( $i=0 ; $i<count($report_layout_list) ;  $i++ ) {
                     $layout = $report_layout_list[$i];
                     $checked = $report->report_layout == $i ? "checked" :"" ;
                     ?>
                     <input type="radio" name="layout" <?php echo $checked ; ?> <?php echo $add_step ? "disabled" : "" ; ?> /><?php echo $AppUI->_($layout) ; ?><br>
                     <?php
-                    }
-                    ?>
+                }
+                ?>
                 </td>
             </tr>
             <?php if ( $perms->checkModule( 'admin', 'edit' ) ) { ?>
