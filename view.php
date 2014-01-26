@@ -9,6 +9,7 @@ if (!defined('W2P_BASE_DIR')){
 global $field_desc, $user_function_list, $indirection_table, $join_list;
 global $AppUI, $field_list, $show_days ;
 
+require_once W2P_BASE_DIR . '/modules/flexreports/query.class.php';
 require_once W2P_BASE_DIR . '/modules/flexreports/report_functions.php';
 $perms =& $AppUI->acl();
 $df = $AppUI->getPref('SHDATEFORMAT');
