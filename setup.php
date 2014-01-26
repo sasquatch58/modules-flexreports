@@ -12,19 +12,19 @@ if (!defined('W2P_BASE_DIR')){
 
 
 $config = array();
-$config['mod_name']             = 'Flexreports';
-$config['mod_version']          = '0.2';
-$config['mod_directory']        = 'flexreports';
-$config['mod_setup_class']      = 'CSetupFlexReports';
-$config['mod_type']             = 'user';
-$config['mod_ui_name']          = 'FlexReports';
-$config['mod_ui_icon']          = 'report_go.png';
-$config['mod_description']      = 'A module for dynamic reports';
-$config['mod_main_class']       = 'CFlexReport';
-$config['permissions_item_table'] = 'flexreports';
-$config['permissions_item_field'] = 'report_id';
-$config['permissions_item_label'] = 'report_name';
-$config['requirements']         = array(
+$config['mod_name']                 = 'Flexreports';
+$config['mod_version']              = '0.2';
+$config['mod_directory']            = 'flexreports';
+$config['mod_setup_class']          = 'CSetupFlexReports';
+$config['mod_type']                 = 'user';
+$config['mod_ui_name']              = 'FlexReports';
+$config['mod_ui_icon']              = 'report_go.png';
+$config['mod_description']          = 'A module for dynamic reports';
+$config['mod_main_class']           = 'CFlexReport';
+$config['permissions_item_table']   = 'flexreports';
+$config['permissions_item_field']   = 'report_id';
+$config['permissions_item_label']   = 'report_name';
+$config['requirements']             = array(
     array('require' => 'web2project',   'comparator' => '>=', 'version' => '3')
 );
 
@@ -34,8 +34,7 @@ if (@$a == 'setup') {
 
 class CSetupFlexReports extends w2p_System_Setup {
     public function install() {
-    	$result = $this->_checkRequirements();
-    	
+    	$result = $this->_meetsRequirements();
     	if (!$result) {
     		return false;
     	}
