@@ -528,7 +528,7 @@ function optionsSave() {
                     <input type="button" class="button" name="cancel" value="<?php echo $AppUI->_('Cancel');?>" onClick="javascript:if ( confirm('<?php echo $AppUI->_("Cancel ?") ; ?>')) {location.href='?<?php echo $cancel ; ?>'}" />
                 </td>
                 <td colspan="3" align="right">
-                    <input type="button" class="button" name="submit" value="<?php echo $add_step ? $AppUI->_('Submit') : $AppUI->_('Continue') ; ?>" onClick="javacript:editCheck()" />
+                    <input type="button" class="button" name="submit_rpt" value="<?php echo $add_step ? $AppUI->_('Submit') : $AppUI->_('Continue') ; ?>" onClick="javacript:editCheck()" />
                 </td>
             </tr>
         </table>
